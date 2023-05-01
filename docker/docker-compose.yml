@@ -1,0 +1,13 @@
+version: '3.8'
+
+services:
+  db:
+    image: mysql:latest
+    restart: always
+    environment:
+      MYSQL_ROOT_PASSWORD: kalem123
+      MYSQL_DATABASE: user
+      MYSQL_USER: murat
+      MYSQL_PASSWORD: kalem123
+    ports:
+      - "3306:3306"

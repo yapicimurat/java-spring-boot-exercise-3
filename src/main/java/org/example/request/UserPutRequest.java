@@ -1,25 +1,17 @@
 package org.example.request;
 
-import javax.validation.constraints.Max;
-import javax.validation.constraints.Min;
-import javax.validation.constraints.NotBlank;
-import javax.validation.constraints.NotNull;
+import javax.validation.constraints.*;
 
 public class UserPutRequest {
     @NotNull
     @NotBlank
-    @Min(3)
-    @Max(50)
+    @Size(min = 3, max = 50)
     private String firstName;
     @NotNull
     @NotBlank
-    @Min(3)
-    @Max(50)
+    @Size(min = 3, max = 50)
     private String lastName;
-    @NotNull
-    @NotBlank
-    @Min(8)
-    @Max(200)
+    @Size(min = 8, max = 200)
     private String password;
     public String getFirstName() {
         return firstName;

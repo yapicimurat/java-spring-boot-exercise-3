@@ -1,13 +1,12 @@
-package org.example.service;
+package org.example.service.impl;
 
 import org.example.constant.UserConstant;
 import org.example.dto.AuthenticationDto;
-import org.example.exception.UserAlreadyExistException;
 import org.example.model.User;
-import org.example.repository.UserRepository;
 import org.example.request.AuthenticationRequest;
 import org.example.response.DataResponse;
 import org.example.response.SuccessDataResponse;
+import org.example.service.AuthenticationService;
 import org.example.util.JwtUtil;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -16,11 +15,11 @@ import org.springframework.stereotype.Service;
 @Service
 public class AuthenticationServiceImpl implements AuthenticationService {
     private final AuthenticationManager authenticationManager;
-    private final UserRepository userRepository;
+    private final UserServiceRules userServiceRules;
 
-    public AuthenticationServiceImpl(AuthenticationManager authenticationManager, UserRepository userRepository) {
+    public AuthenticationServiceImpl(AuthenticationManager authenticationManager, UserServiceRules userServiceRules) {
         this.authenticationManager = authenticationManager;
-        this.userRepository = userRepository;
+        this.userServiceRules = userServiceRules;
     }
 
     @Override
@@ -30,8 +29,7 @@ public class AuthenticationServiceImpl implements AuthenticationService {
                         authenticationRequest.getPassword())
         );
 
-        //user can get directly because getUserByUsername will not return not found.
-        final User user = userRepository.getUserByUsername(authenticationRequest.getUsername()).get();
+        final User user = userServiceRules.findByUsername(authenticationRequest.getUsername());
         final String accessToken = JwtUtil.generateJWT(user.getUsername());
         final AuthenticationDto authenticationDto = new AuthenticationDto(accessToken);
 

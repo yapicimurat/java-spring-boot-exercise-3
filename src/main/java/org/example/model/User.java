@@ -18,7 +18,7 @@ public class User extends BaseModel {
     @Column(length = 100)
     private String password;
     private LocalDateTime lastLoginDateTime;
-    @ManyToMany(fetch = FetchType.EAGER)
+    @ManyToMany(fetch = FetchType.EAGER, cascade = CascadeType.PERSIST)
     private Set<Role> roles = new HashSet<>();
     public User() {
 

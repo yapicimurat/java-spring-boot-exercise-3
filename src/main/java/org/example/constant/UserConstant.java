@@ -11,5 +11,6 @@ public final class UserConstant {
     public static final String FETCH_SUCCESSFULLY = "User(s) successfully fetched.";
     public static final String CREATE_SUCCESSFULLY = "User successfully created.";
     public static final String UPDATE_SUCCESSFULLY = "User successfully updated.";
+    public static final String DELETE_SUCCESSFULLY = "User successfully deleted.";
     public static final String AUTHENTICATE_SUCCESSFULLY = "User successfully authenticated.";
 }

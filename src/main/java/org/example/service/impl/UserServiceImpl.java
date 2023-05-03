@@ -1,4 +1,4 @@
-package org.example.service;
+package org.example.service.impl;
 
 import org.apache.logging.log4j.util.Strings;
 import org.example.constant.RoleConstant;
@@ -6,8 +6,6 @@ import org.example.constant.UserConstant;
 import org.example.dto.UserDto;
 import org.example.exception.InvalidRoleException;
 import org.example.exception.RoleNotFoundException;
-import org.example.exception.UserAlreadyExistException;
-import org.example.exception.UserNotFoundException;
 import org.example.model.Role;
 import org.example.model.RoleType;
 import org.example.model.User;
@@ -18,19 +16,20 @@ import org.example.request.UserPutRequest;
 import org.example.response.DataResponse;
 import org.example.response.Response;
 import org.example.response.SuccessDataResponse;
+import org.example.response.SuccessResponse;
+import org.example.service.UserService;
 import org.example.util.EntityUtil;
 import org.modelmapper.ModelMapper;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import java.util.List;
 import java.util.Objects;
-import java.util.Optional;
-import java.util.UUID;
 
 @Service
 public class UserServiceImpl implements UserService {
     private final UserRepository userRepository;
     private final RoleRepository roleRepository;
+    private final UserServiceRules userServiceRules;
     private final ModelMapper modelMapper;
     private final PasswordEncoder passwordEncoder;
 
@@ -38,17 +37,19 @@ public class UserServiceImpl implements UserService {
             UserRepository userRepository,
             RoleRepository roleRepository,
             ModelMapper modelMapper,
-            PasswordEncoder passwordEncoder
+            PasswordEncoder passwordEncoder,
+            UserServiceRules userServiceRules
     ) {
         this.userRepository = userRepository;
         this.roleRepository = roleRepository;
+        this.userServiceRules = userServiceRules;
         this.modelMapper = modelMapper;
         this.passwordEncoder = passwordEncoder;
     }
 
     @Override
     public DataResponse<UserDto> getById(String id) {
-        final User user = findById(id);
+        final User user = userServiceRules.findById(id);
         final UserDto userDto = modelMapper.map(user, UserDto.class);
 
         return new SuccessDataResponse<>(userDto, UserConstant.FETCH_SUCCESSFULLY);
@@ -64,7 +65,7 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public DataResponse<String> create(UserPostRequest request) {
-        checkIfUserExists(request.getUsername());
+        userServiceRules.checkIfUserExists(request.getUsername());
         checkIfValidRole(request.getRoleName());
 
         final Role role = findRoleByRoleType(RoleType.valueOf(request.getRoleName()));
@@ -84,15 +85,14 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public DataResponse<String> update(String id, UserPutRequest request) {
-        final User user = findById(id);
+        final User user = userServiceRules.findById(id);
 
         if(!Objects.isNull(request.getPassword()) && Strings.isNotEmpty(request.getPassword())) {
-            user.setPassword(request.getPassword());
+            user.setPassword(passwordEncoder.encode(request.getPassword()));
         }
 
         user.setFirstName(request.getFirstName());
         user.setLastName(request.getLastName());
-
         userRepository.save(user);
 
         return new SuccessDataResponse<>(user.getId().toString(), UserConstant.UPDATE_SUCCESSFULLY);
@@ -100,23 +100,11 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public Response delete(final String id) {
-        //TODO: Complete here...
-        return null;
-    }
+        final User user = userServiceRules.findById(id);
 
-    private User findById(final String id) throws UserNotFoundException {
-        return userRepository.findById(UUID.fromString(id))
-                .orElseThrow(() -> new UserNotFoundException(UserConstant.USER_NOT_FOUND));
-    }
+        userRepository.delete(user);
 
-    private Optional<User> findByUsername(final String username) {
-        return userRepository.getUserByUsername(username);
-    }
-
-    private void checkIfUserExists(final String username) throws UserAlreadyExistException {
-        if(findByUsername(username).isPresent()) {
-            throw new UserAlreadyExistException(UserConstant.USER_ALREADY_EXIST);
-        }
+        return new SuccessResponse(UserConstant.DELETE_SUCCESSFULLY);
     }
 
     private void checkIfValidRole(String roleName) {

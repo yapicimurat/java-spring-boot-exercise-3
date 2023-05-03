@@ -36,8 +36,8 @@ public class SecurityConfiguration {
                 .cors().disable()
                 .authenticationProvider(authenticationProvider)
                 .addFilterBefore(authorizationFilter, UsernamePasswordAuthenticationFilter.class)
-                .sessionManagement((session) -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
-                .authorizeHttpRequests((auth) -> {
+                .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
+                .authorizeHttpRequests(auth -> {
                     auth.antMatchers("/api/auth/**").permitAll();
                     //<------ USER END-POINTS ------->
                     auth.antMatchers(HttpMethod.GET, UserConstant.CONTROLLER_PREFIX + "/**")
@@ -49,6 +49,8 @@ public class SecurityConfiguration {
                             .hasAnyAuthority(RoleType.ADMIN.getRoleName());
                     auth.antMatchers(HttpMethod.POST, UserConstant.CONTROLLER_PREFIX)
                             .hasAnyAuthority(RoleType.ADMIN.getRoleName());
+                    auth.antMatchers(HttpMethod.DELETE, UserConstant.CONTROLLER_PREFIX + "/**")
+                                    .hasAnyAuthority(RoleType.ADMIN.getRoleName());
                     auth.antMatchers(HttpMethod.PUT, UserConstant.CONTROLLER_PREFIX + "/**")
                             .hasAnyAuthority(RoleType.ADMIN.getRoleName());
                     //<------ END USER END-POINTS ------>

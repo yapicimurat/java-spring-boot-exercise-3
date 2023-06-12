@@ -1,14 +1,14 @@
 package org.example.model;
 
-
 import javax.persistence.Entity;
 import javax.persistence.EntityListeners;
+import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
 
 @Entity
 @EntityListeners(EntityListener.class)
 public class Role extends BaseModel {
-    @Enumerated
+    @Enumerated(EnumType.ORDINAL)
     private RoleType roleType = RoleType.NORMAL;
     public Role() {
 

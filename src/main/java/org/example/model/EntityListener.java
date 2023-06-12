@@ -16,7 +16,7 @@ public class EntityListener {
     @PreUpdate
     public void preUpdate(Object entity) {
         if(entity instanceof BaseModel) {
-            ((BaseModel)entity).setCreatedAt(LocalDateTime.now());
+            ((BaseModel)entity).setUpdatedAt(LocalDateTime.now());
         }
     }
 }

@@ -10,6 +10,7 @@ import org.example.service.AuthenticationService;
 import org.example.util.JwtUtil;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.AuthenticationException;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -23,7 +24,7 @@ public class AuthenticationServiceImpl implements AuthenticationService {
     }
 
     @Override
-    public DataResponse<AuthenticationDto> authenticate(AuthenticationRequest authenticationRequest) {
+    public DataResponse<AuthenticationDto> authenticate(AuthenticationRequest authenticationRequest) throws AuthenticationException {
         authenticationManager.authenticate(
                 new UsernamePasswordAuthenticationToken(authenticationRequest.getUsername(),
                         authenticationRequest.getPassword())

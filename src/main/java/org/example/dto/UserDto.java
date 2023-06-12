@@ -1,5 +1,7 @@
 package org.example.dto;
 
+import java.util.Objects;
+
 public class UserDto extends BaseDto {
     private String firstName;
     private String lastName;
@@ -26,5 +28,18 @@ public class UserDto extends BaseDto {
 
     public void setUsername(String username) {
         this.username = username;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        UserDto userDto = (UserDto) o;
+        return Objects.equals(firstName, userDto.firstName) && Objects.equals(lastName, userDto.lastName) && Objects.equals(username, userDto.username);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(firstName, lastName, username);
     }
 }
